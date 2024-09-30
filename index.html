@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>马天乐的AI智能世界</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">马天乐的AI网站</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="#hero">主页</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#about">关于AI</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#portfolio">AI项目</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#ai-chat">AI对话</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero">
+            <div class="swiper" style="height: 50vh; max-height: 500px;">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <img src="https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="AI技术" style="object-fit: cover; width: 100%; height: 100%;">
+                        <div class="slide-content">
+                            <h2>探索AI的无限可能</h2>
+                            <p>人工智能正在改变我们的世界</p>
+                            <a href="#about" class="btn btn-primary">了解更多</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="机器人" style="object-fit: cover; width: 100%; height: 100%;">
+                        <div class="slide-content">
+                            <h2>AI与机器人技术</h2>
+                            <p>智能机器人正在成为现实</p>
+                            <a href="#portfolio" class="btn btn-primary">查看项目</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="https://images.pexels.com/photos/7567444/pexels-photo-7567444.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="数据分析" style="object-fit: cover; width: 100%; height: 100%;">
+                        <div class="slide-content">
+                            <h2>AI驱动的数据分析</h2>
+                            <p>从海量数据中获取洞察</p>
+                            <a href="#ai-chat" class="btn btn-primary">体验AI对话</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </section>
+
+        <section id="about" class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-4">关于AI</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="https://images.pexels.com/photos/8386434/pexels-photo-8386434.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="AI图像" class="img-fluid rounded-circle">
+                    </div>
+                    <div class="col-md-8">
+                        <p>人工智能（AI）是计算机科学的一个分支，致力于创造智能机器。AI技术正在迅速发展，并在各个领域产生深远影响。</p>
+                        <p>AI的主要应用领域包括：</p>
+                        <ul>
+                            <li>机器学习和深度学习</li>
+                            <li>自然语言处理</li>
+                            <li>计算机视觉</li>
+                            <li>机器人技术</li>
+                            <li>智能决策系统</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary">探索AI世界</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="portfolio" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-4">AI项目展示</h2>
+                <div class="row" id="portfolio-items">
+                    <!-- AI项目将通过JavaScript动态添加 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- AI对话部分 -->
+        <section id="ai-chat" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-4">AI对话体验</h2>
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div id="chat-window" class="bg-white p-3 rounded shadow-sm mb-3" style="height: 400px; overflow-y: auto;">
+                            <p class="text-muted text-center">欢迎体验AI对话！请输入您的问题。</p>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="user-input" class="form-control" placeholder="输入您的问题...">
+                            <button class="btn btn-primary" type="button" id="send-button">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark text-light py-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2023 AI智能世界. 保留所有权利。</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="https://twitter.com" target="_blank" class="text-light me-2"><i class="fab fa-twitter"></i></a>
+                    <a href="https://linkedin.com" target="_blank" class="text-light me-2"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com" target="_blank" class="text-light me-2"><i class="fab fa-github"></i></a>
+                    <a href="#" class="text-light"><i class="fab fa-weixin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
