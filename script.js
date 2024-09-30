@@ -46,103 +46,108 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 处理联系表单提交
-document.getElementById('contact-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    // 这里添加表单提交逻辑，可以使用AJAX发送数据到服务器
-    alert('感谢您的留言！我们会尽快回复您。');
-    e.target.reset();
-});
+// const contactForm = document.getElementById('contact-form');
+// if (contactForm) {
+//     contactForm.addEventListener('submit', (e) => {
+//         e.preventDefault();
+//         alert('感谢您的留言！我们会尽快回复您。');
+//         e.target.reset();
+//     });
+// }
 
 // AI对话功能
 const chatWindow = document.getElementById('chat-window');
 const userInput = document.getElementById('user-input');
 const sendButton = document.getElementById('send-button');
 
-function addMessage(message, isUser = false) {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('chat-message', isUser ? 'user-message' : 'ai-message');
-    messageElement.style.alignSelf = isUser ? 'flex-end' : 'flex-start';
-    
-    // 将消息内容按换行符分割并添加<br>标签
-    const formattedMessage = message.replace(/\n/g, '<br>');
-    
-    messageElement.innerHTML = formattedMessage;
-    chatWindow.appendChild(messageElement);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-function showTypingAnimation() {
-    const typingElement = document.createElement('div');
-    typingElement.id = 'typing-animation';
-    typingElement.innerHTML = '<span class="badge bg-secondary p-2">AI正在思考<span class="dot-animation">...</span></span>';
-    chatWindow.appendChild(typingElement);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-function removeTypingAnimation() {
-    const typingElement = document.getElementById('typing-animation');
-    if (typingElement) {
-        typingElement.remove();
+if (chatWindow && userInput && sendButton) {
+    // 只有当所有元素都存在时，才添加事件监听器和初始化聊天功能
+    function addMessage(message, isUser = false) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message', isUser ? 'user-message' : 'ai-message');
+        messageElement.innerHTML = `
+            <div class="message-content ${isUser ? 'bg-primary text-white' : 'bg-light'} p-2 rounded mb-2">
+                ${message.replace(/\n/g, '<br>')}
+            </div>
+        `;
+        chatWindow.appendChild(messageElement);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
     }
-}
 
-async function getAIResponse(message) {
-    const apiUrl = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
-    const data = {
-        model: "glm-4",
-        messages: [
-            {
-                role: "user",
-                content: message
-            }
-        ]
-    };
-    const headers = {
-        'Authorization': 'Bearer 7574cd802017a8590cc9a410d1e94dbe.Y74xt1IdIzjdT7Ho',
-        'Content-Type': 'application/json'
-    };
+    function showTypingAnimation() {
+        const typingElement = document.createElement('div');
+        typingElement.id = 'typing-animation';
+        typingElement.innerHTML = '<div class="message-content bg-light p-2 rounded mb-2"><span class="badge bg-secondary">AI正在思考<span class="dot-animation">...</span></span></div>';
+        chatWindow.appendChild(typingElement);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
 
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    function removeTypingAnimation() {
+        const typingElement = document.getElementById('typing-animation');
+        if (typingElement) {
+            typingElement.remove();
         }
-
-        const responseData = await response.json();
-        // 确保返回的内容中的换行符被保留
-        return responseData.choices[0].message.content.replace(/\\n/g, '\n');
-    } catch (error) {
-        console.error('调用API时出错:', error);
-        throw error;
     }
-}
 
-async function handleSendMessage() {
-    const message = userInput.value.trim();
-    if (message) {
-        addMessage(message, true);
-        userInput.value = '';
-        showTypingAnimation();
-        
+    async function getAIResponse(message) {
+        const apiUrl = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+        const data = {
+            model: "glm-4",
+            messages: [
+                {
+                    role: "user",
+                    content: message
+                }
+            ]
+        };
+        const headers = {
+            'Authorization': 'Bearer 7574cd802017a8590cc9a410d1e94dbe.Y74xt1IdIzjdT7Ho',
+            'Content-Type': 'application/json'
+        };
+
         try {
-            const response = await getAIResponse(message);
-            removeTypingAnimation();
-            addMessage(response);
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const responseData = await response.json();
+            return responseData.choices[0].message.content;
         } catch (error) {
-            removeTypingAnimation();
-            addMessage('抱歉，发生了错误，请稍后再试。');
+            console.error('调用API时出错:', error);
+            throw error;
         }
     }
-}
 
-sendButton.addEventListener('click', handleSendMessage);
-userInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        handleSendMessage();
+    async function handleSendMessage() {
+        const message = userInput.value.trim();
+        if (message) {
+            addMessage(message, true);
+            userInput.value = '';
+            showTypingAnimation();
+            
+            try {
+                const response = await getAIResponse(message);
+                removeTypingAnimation();
+                addMessage(response);
+            } catch (error) {
+                removeTypingAnimation();
+                addMessage('抱歉，发生了错误，请稍后再试。');
+            }
+        }
     }
-});
+
+    sendButton.addEventListener('click', handleSendMessage);
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleSendMessage();
+        }
+    });
+} else {
+    console.error('无法找到聊天功能所需的一个或多个元素');
+}
