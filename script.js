@@ -32,16 +32,38 @@ const portfolioItems = [
     }
 ];
 
+// 预加载函数
+function preloadMedia(url) {
+    return new Promise((resolve, reject) => {
+        if (url.endsWith('.mp4')) {
+            const video = document.createElement('video');
+            video.onloadeddata = resolve;
+            video.onerror = reject;
+            video.src = url;
+        } else {
+            const img = new Image();
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = url;
+        }
+    });
+}
+
 // 动态添加作品集项目
-function renderPortfolioItems() {
+async function renderPortfolioItems() {
     const portfolioContainer = document.getElementById('portfolio-items');
+    
+    // 预加载媒体文件
+    const mediaToPreload = portfolioItems.map(item => item.hoverImage || item.hoverVideo).filter(Boolean);
+    await Promise.all(mediaToPreload.map(preloadMedia));
+
     portfolioItems.forEach(item => {
         let mediaHtml;
         if (item.hoverVideo) {
             mediaHtml = `
                 <div class="media-container" style="position: relative; cursor: pointer; padding-top: 56.25%;">
                     <img src="${item.image}" class="card-img-top" alt="${item.title}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
-                    <video src="${item.hoverVideo}" class="card-img-top" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" muted loop></video>
+                    <video src="${item.hoverVideo}" class="card-img-top" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" muted loop preload="auto"></video>
                 </div>
             `;
         } else {
@@ -92,13 +114,13 @@ function renderPortfolioItems() {
                 video.currentTime = 0;
             });
         } else if (img.dataset.hoverImage) {
-            const originalSrc = img.src;
-            const hoverImage = img.dataset.hoverImage;
+            const hoverImage = new Image();
+            hoverImage.src = img.dataset.hoverImage;
             mediaContainer.addEventListener('mouseenter', () => {
-                img.src = hoverImage;
+                img.src = hoverImage.src;
             });
             mediaContainer.addEventListener('mouseleave', () => {
-                img.src = originalSrc;
+                img.src = item.image;
             });
         }
     });
@@ -106,7 +128,9 @@ function renderPortfolioItems() {
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', () => {
-    renderPortfolioItems();
+    renderPortfolioItems().catch(error => {
+        console.error('Error rendering portfolio items:', error);
+    });
 });
 
 // 处理联系表单提交
