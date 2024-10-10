@@ -50,20 +50,16 @@ function preloadMedia(url) {
 }
 
 // 动态添加作品集项目
-async function renderPortfolioItems() {
+function renderPortfolioItems() {
     const portfolioContainer = document.getElementById('portfolio-items');
     
-    // 预加载媒体文件
-    const mediaToPreload = portfolioItems.map(item => item.hoverImage || item.hoverVideo).filter(Boolean);
-    await Promise.all(mediaToPreload.map(preloadMedia));
-
     portfolioItems.forEach(item => {
         let mediaHtml;
         if (item.hoverVideo) {
             mediaHtml = `
                 <div class="media-container" style="position: relative; cursor: pointer; padding-top: 56.25%;">
                     <img src="${item.image}" class="card-img-top" alt="${item.title}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
-                    <video src="${item.hoverVideo}" class="card-img-top" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" muted loop preload="auto"></video>
+                    <video src="${item.hoverVideo}" class="card-img-top" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" muted loop preload="none"></video>
                 </div>
             `;
         } else {
@@ -96,40 +92,65 @@ async function renderPortfolioItems() {
 
     // 添加鼠标悬停事件监听器
     const portfolioCards = document.querySelectorAll('#portfolio-items .card');
-    portfolioCards.forEach(card => {
+    portfolioCards.forEach((card, index) => {
         const mediaContainer = card.querySelector('.media-container');
         const img = mediaContainer.querySelector('img.card-img-top');
         const video = mediaContainer.querySelector('video.card-img-top');
         
         if (video) {
-            mediaContainer.addEventListener('mouseenter', () => {
-                img.style.display = 'none';
-                video.style.display = 'block';
-                video.play();
+            let isVideoLoaded = false;
+            video.addEventListener('loadeddata', () => {
+                isVideoLoaded = true;
+                console.log('视频加载完成');
             });
+
+            mediaContainer.addEventListener('mouseenter', () => {
+                if (isVideoLoaded) {
+                    img.style.display = 'none';
+                    video.style.display = 'block';
+                    video.play().catch(e => console.error('视频播放失败:', e));
+                } else {
+                    console.log('视频还未加载完成');
+                }
+            });
+
             mediaContainer.addEventListener('mouseleave', () => {
                 video.style.display = 'none';
                 img.style.display = 'block';
                 video.pause();
                 video.currentTime = 0;
             });
+
+            // 强制加载视频
+            video.load();
         } else if (img.dataset.hoverImage) {
+            const originalSrc = img.src; // 保存原始图片的src
             const hoverImage = new Image();
             hoverImage.src = img.dataset.hoverImage;
             mediaContainer.addEventListener('mouseenter', () => {
-                img.src = hoverImage.src;
+                if (hoverImage.complete) { // 图片已加载完成
+                    img.src = hoverImage.src;
+                }
             });
             mediaContainer.addEventListener('mouseleave', () => {
-                img.src = item.image;
+                img.src = originalSrc; // 恢复原始图片
             });
         }
     });
 }
 
+// 预加载媒体文件
+async function preloadAllMedia() {
+    const mediaToPreload = portfolioItems.map(item => item.hoverImage || item.hoverVideo).filter(Boolean);
+    await Promise.all(mediaToPreload.map(preloadMedia));
+    console.log('所有媒体文件预加载完成');
+}
+
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', () => {
-    renderPortfolioItems().catch(error => {
-        console.error('Error rendering portfolio items:', error);
+    renderPortfolioItems();
+    preloadAllMedia().catch(error => {
+        console.error('预加载媒体文件时出错:', error);
     });
 });
 
