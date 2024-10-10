@@ -15,28 +15,92 @@ const swiper = new Swiper('.swiper', {
 
 // 作品集数据
 const portfolioItems = [
-    { title: 'AI画图', description: '稳定扩散式生成图片。', image: 'source/kele.png', category: '开发' },
+    { 
+        title: 'AI画图 - 可乐海报', 
+        description: '鼠标移入可乐位置，生成AI广告海报。', 
+        image: 'source/kele-old.jpg', 
+        hoverImage: 'source/kele.png', 
+        category: '开发' 
+    },
     { title: 'AI商业计划书', description: 'AI收集信息生成大纲再进行PPT创作。', image: 'source/wutangcha.png', category: '设计', downloadPPT: 'source/wutangcha.pptx' },
-    { title: 'AI聊天机器人', description: '使用自然语言处理技术，一个智能客服聊天机器人。', image: 'https://picsum.photos/300/200?random=10', category: '人工智能' }
+    { 
+        title: 'AI视频 - 瞬息全宇宙logo', 
+        description: '鼠标移入图片logo，查看AI视频。', 
+        image: 'source/logo.png', 
+        hoverVideo: 'source/logo-video.mp4', 
+        category: '人工智能' 
+    }
 ];
 
 // 动态添加作品集项目
 function renderPortfolioItems() {
     const portfolioContainer = document.getElementById('portfolio-items');
     portfolioItems.forEach(item => {
+        let mediaHtml;
+        if (item.hoverVideo) {
+            mediaHtml = `
+                <div class="media-container" style="position: relative; cursor: pointer; padding-top: 56.25%;">
+                    <img src="${item.image}" class="card-img-top" alt="${item.title}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                    <video src="${item.hoverVideo}" class="card-img-top" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" muted loop></video>
+                </div>
+            `;
+        } else {
+            mediaHtml = `
+                <div class="media-container" style="position: relative; cursor: pointer; padding-top: 56.25%;">
+                    <img src="${item.image}" class="card-img-top" alt="${item.title}" 
+                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"
+                         ${item.hoverImage ? `data-hover-image="${item.hoverImage}"` : ''}>
+                </div>
+            `;
+        }
+
         const itemHtml = `
             <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="${item.image}" class="card-img-top" alt="${item.title}">
-                    <div class="card-body">
+                <div class="card h-100">
+                    ${mediaHtml}
+                    <div class="card-body d-flex flex-column">
                         <h5 class="card-title">${item.title}</h5>
-                        <p class="card-text">${item.description}</p>
-                        ${item.downloadPPT ? `<a href="${item.downloadPPT}" class="btn btn-primary" download>下载PPT</a>` : ''}
+                        <p class="card-text flex-grow-1">${item.description}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div></div>
+                            ${item.downloadPPT ? `<a href="${item.downloadPPT}" class="btn btn-primary" download>下载PPT</a>` : ''}
+                        </div>
                     </div>
                 </div>
             </div>
         `;
         portfolioContainer.innerHTML += itemHtml;
+    });
+
+    // 添加鼠标悬停事件监听器
+    const portfolioCards = document.querySelectorAll('#portfolio-items .card');
+    portfolioCards.forEach(card => {
+        const mediaContainer = card.querySelector('.media-container');
+        const img = mediaContainer.querySelector('img.card-img-top');
+        const video = mediaContainer.querySelector('video.card-img-top');
+        
+        if (video) {
+            mediaContainer.addEventListener('mouseenter', () => {
+                img.style.display = 'none';
+                video.style.display = 'block';
+                video.play();
+            });
+            mediaContainer.addEventListener('mouseleave', () => {
+                video.style.display = 'none';
+                img.style.display = 'block';
+                video.pause();
+                video.currentTime = 0;
+            });
+        } else if (img.dataset.hoverImage) {
+            const originalSrc = img.src;
+            const hoverImage = img.dataset.hoverImage;
+            mediaContainer.addEventListener('mouseenter', () => {
+                img.src = hoverImage;
+            });
+            mediaContainer.addEventListener('mouseleave', () => {
+                img.src = originalSrc;
+            });
+        }
     });
 }
 
